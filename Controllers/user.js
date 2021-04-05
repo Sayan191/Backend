@@ -1,5 +1,6 @@
 const User = require("../Models/user")
 const Order = require("../Models/Orders")
+const { validationResult } = require("express-validator");
 const { isBuffer } = require("lodash")
 
 
@@ -23,10 +24,20 @@ exports.getaUser = (req,res) =>{
     return res.json({
         name:req.profile.name,
         email:req.profile.email,
-        _id:req.profile._id
+        _id:req.profile._id,
+        role:req.profile.role,
+        phone:req.profile.phone
     });
 }
 exports.updateUser = (req,res) =>{
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(422).send({
+            error:errors.array()[0].msg
+        });
+    }
+    
     User.findByIdAndUpdate(
         {_id : req.profile._id},
         {$set : req.body},
@@ -44,7 +55,8 @@ exports.updateUser = (req,res) =>{
             return res.json({
                 name:req.profile.name,
                 email:req.profile.email,
-                _id:req.profile._id
+                _id:req.profile._id,
+                role:req.profile.role
             });
         }
     )
@@ -57,7 +69,7 @@ exports.userPurchaseList = (req,res) =>{
         .exec((err,order)=>{
             if (err){
                 return res.status(200).json({
-                    Error: "No order found"
+                    error: "No order found"
                 });
             }
             res.json(order);
@@ -87,7 +99,7 @@ exports.pushOrderInPurchaseList = (req,res,next) =>{
         (err,items) =>{
             if(err){
                 return res.status(400).json({
-                    Error:"Unable to save Purchase List"
+                    error:"Unable to save Purchase List"
                 });
             }
             next();

@@ -19,7 +19,7 @@ const orderRoutes = require("./Routes/order")
 const db = process.env.DATABASE 
 const c_s = process.env.CONNECTION_STRING
 //db connection
-mongoose.connect(c_s,{
+mongoose.connect(db,{
     useNewUrlParser : true,
     useUnifiedTopology:true,
     useCreateIndex:true
